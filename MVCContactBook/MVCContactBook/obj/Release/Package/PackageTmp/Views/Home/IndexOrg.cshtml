@@ -1,0 +1,147 @@
+﻿@model IEnumerable<MVCContactBook.ViewModel.ContactModel>
+@{
+    ViewBag.Title = "Organization List";
+    var grid = new WebGrid(source: Model, canPage: true, canSort: true, rowsPerPage: 10);
+}
+
+
+<h3>Organization List</h3>
+<div style="overflow:auto">
+    <h3>
+        Click to edit and Delete Contact.
+    </h3>
+
+    @grid.GetHtml(
+    tableStyle: "table table-responsive",
+    columns: grid.Columns
+        (
+            grid.Column(header: "OrganizationName", format:@<text><div class="edit" data-id="@item.OrganizationID" data-propertyname="OrganizationName">@item.OrganizationName</div></text>),
+            grid.Column(header: "ContactNo", format:@<text><div class="edit" data-id="@item.OrganizationID" data-propertyname="ContactNo">@item.ContactNo</div></text>),
+            grid.Column(header: "Address", format:@<text><div class="edit" data-id="@item.OrganizationID" data-propertyname="Address">@item.Address</div></text>),
+            grid.Column(header: "Email", format:@<text><div class="edit" data-id="@item.OrganizationID" data-propertyname="Email">@item.Email</div></text>),
+            grid.Column(header: "", format: (item) => Html.ActionLink("Delete", "DeleteOrg", new { id = item.OrganizationID }, null))
+        )
+)
+    <h5>Add</h5>
+    <br />
+    <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width: 150px">
+                OrganizationName:<br />
+                <input type="text" id="OrganizationName" style="width:140px" />
+            </td>
+            <td style="width: 150px">
+                ContactNo:<br />
+                <input type="text" id="ContactNo" style="width:140px" />
+            </td>
+            <td style="width: 150px">
+                Address:<br />
+                <input type="text" id="Address" style="width:140px" />
+            </td>
+            <td style="width: 150px">
+                Email:<br />
+                <input type="text" id="Email" style="width:140px" />
+            </td>
+            <td style="width: 100px">
+                <br />
+                <input type="button" id="btnAdd" value="Add" />
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#btnAdd").click(function () {
+                //Reference the WebGrid.
+                var webGrid = $("#WebGrid");
+
+                //Reference the first row.
+                var row = webGrid.find("tr").eq(1);
+
+                //Check if row is dummy, if yes then remove.
+                if ($.trim(row.find("td").eq(0).html()) == "") {
+                    row.remove();
+                }
+
+                //Clone the reference first row.
+                row = row.clone(true);
+
+                //Reference the Name TextBox.
+                var OrganizationName = $("#OrganizationName");
+
+                //Reference the Country TextBox.
+                var ContactNo = $("#ContactNo");
+                var Address = $("#Address");
+
+                var Email = $("#Email");
+
+
+                //Send the records to server for saving to database.
+                $.ajax({
+                    type: "POST",
+                    url: "/home/AddOrganization",
+                    data: '{OrganizationName: "' + OrganizationName.val() + '", ContactNo: "' + ContactNo.val() + '", Address: "' + Address.val() + '", Email: "' + Email.val() + '" }',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+
+                        //Add the Name value to first cell.
+                        SetValue(row, 0, OrganizationName);
+
+                        //Add the Country value to second cell.
+                        SetValue(row, 1, ContactNo);
+                        SetValue(row, 2, Address);
+                        SetValue(row, 3, Email);
+
+                        //Add the row to the WebGrid.
+
+
+                    }
+                });
+
+            });
+            function SetValue(row, IndexOrg, textbox) {
+                //Reference the Cell and set the value.
+                row.find("td").eq(IndexOrg).html(textbox.val());
+
+                //Clear the TextBox.
+                textbox.val("");
+                location.reload();
+            }
+        });
+    </script>
+
+</div>
+
+@section scripts{
+    <script src="https://www.appelsiini.net/download/jquery.jeditable.js"></script>
+    <script>
+        $(document).ready(function () {
+            var oldValue = '';
+            $('.edit').editable('/home/saveuser1', {
+                cssclass: 'jeditForm',
+                tooltip: 'click to edit me...',
+                width: 'none',
+                height: 'none',
+                onsubmit: function (settings, original) {
+                    oldValue = original.revert;
+                },
+                submitdata: function () {
+                    return {
+                        id: $(this).data('id'),
+                        PropertyName: $(this).data('propertyname')
+                    }
+                },
+                callback: function (value, settings) {
+                    var jsonData = $.parseJSON(value);
+                    if (jsonData.status) {
+                        $(this).text(jsonData.value);
+                    }
+                    else {
+                        $(this).text(oldValue);
+                    }
+                }
+            })
+        })
+    </script>
+}

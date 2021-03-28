@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="MyContactBookModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+  <EntityContainer Name="MyContactBookEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Contacts" EntityType="MyContactBookModel.Contact" />
+    <EntitySet Name="Countries" EntityType="MyContactBookModel.Country" />
+    <EntitySet Name="States" EntityType="MyContactBookModel.State" />
+    <AssociationSet Name="FK_Contacts_Country" Association="MyContactBookModel.FK_Contacts_Country">
+      <End Role="Country" EntitySet="Countries" />
+      <End Role="Contacts" EntitySet="Contacts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Contacts_State" Association="MyContactBookModel.FK_Contacts_State">
+      <End Role="State" EntitySet="States" />
+      <End Role="Contacts" EntitySet="Contacts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_State_Country" Association="MyContactBookModel.FK_State_Country">
+      <End Role="Country" EntitySet="Countries" />
+      <End Role="State" EntitySet="States" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Contact">
+    <Key>
+      <PropertyRef Name="ContactID" />
+    </Key>
+    <Property Name="ContactID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ContactPersonFname" Type="String" Nullable="false" MaxLength="100" Unicode="false" FixedLength="false" />
+    <Property Name="ContactPersonLname" Type="String" MaxLength="100" Unicode="false" FixedLength="false" />
+    <Property Name="ContactNo1" Type="String" Nullable="false" MaxLength="20" Unicode="false" FixedLength="false" />
+    <Property Name="ContactNo2" Type="String" MaxLength="20" Unicode="false" FixedLength="false" />
+    <Property Name="EmailID" Type="String" MaxLength="128" Unicode="false" FixedLength="false" />
+    <Property Name="CountryID" Type="Int32" Nullable="false" />
+    <Property Name="StateID" Type="Int32" Nullable="false" />
+    <Property Name="Address" Type="String" MaxLength="200" Unicode="false" FixedLength="false" />
+    <Property Name="ImagePath" Type="String" MaxLength="200" Unicode="false" FixedLength="false" />
+    <NavigationProperty Name="Country" Relationship="MyContactBookModel.FK_Contacts_Country" FromRole="Contacts" ToRole="Country" />
+    <NavigationProperty Name="State" Relationship="MyContactBookModel.FK_Contacts_State" FromRole="Contacts" ToRole="State" />
+  </EntityType>
+  <EntityType Name="Country">
+    <Key>
+      <PropertyRef Name="CountryID" />
+    </Key>
+    <Property Name="CountryID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CountryName" Type="String" Nullable="false" MaxLength="100" Unicode="false" FixedLength="false" />
+    <NavigationProperty Name="Contacts" Relationship="MyContactBookModel.FK_Contacts_Country" FromRole="Country" ToRole="Contacts" />
+    <NavigationProperty Name="States" Relationship="MyContactBookModel.FK_State_Country" FromRole="Country" ToRole="State" />
+  </EntityType>
+  <EntityType Name="State">
+    <Key>
+      <PropertyRef Name="StateID" />
+    </Key>
+    <Property Name="StateID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CountryID" Type="Int32" Nullable="false" />
+    <Property Name="StateName" Type="String" Nullable="false" MaxLength="100" Unicode="false" FixedLength="false" />
+    <NavigationProperty Name="Contacts" Relationship="MyContactBookModel.FK_Contacts_State" FromRole="State" ToRole="Contacts" />
+    <NavigationProperty Name="Country" Relationship="MyContactBookModel.FK_State_Country" FromRole="State" ToRole="Country" />
+  </EntityType>
+  <Association Name="FK_Contacts_Country">
+    <End Role="Country" Type="MyContactBookModel.Country" Multiplicity="1" />
+    <End Role="Contacts" Type="MyContactBookModel.Contact" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Country">
+        <PropertyRef Name="CountryID" />
+      </Principal>
+      <Dependent Role="Contacts">
+        <PropertyRef Name="CountryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Contacts_State">
+    <End Role="State" Type="MyContactBookModel.State" Multiplicity="1" />
+    <End Role="Contacts" Type="MyContactBookModel.Contact" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="State">
+        <PropertyRef Name="StateID" />
+      </Principal>
+      <Dependent Role="Contacts">
+        <PropertyRef Name="StateID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_State_Country">
+    <End Role="Country" Type="MyContactBookModel.Country" Multiplicity="1" />
+    <End Role="State" Type="MyContactBookModel.State" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Country">
+        <PropertyRef Name="CountryID" />
+      </Principal>
+      <Dependent Role="State">
+        <PropertyRef Name="CountryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="MyContactBookModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+  <EntityContainer Name="MyContactBookModelStoreContainer">
+    <EntitySet Name="Contacts" EntityType="MyContactBookModel.Store.Contacts" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Country" EntityType="MyContactBookModel.Store.Country" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="State" EntityType="MyContactBookModel.Store.State" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="FK_Contacts_Country" Association="MyContactBookModel.Store.FK_Contacts_Country">
+      <End Role="Country" EntitySet="Country" />
+      <End Role="Contacts" EntitySet="Contacts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Contacts_State" Association="MyContactBookModel.Store.FK_Contacts_State">
+      <End Role="State" EntitySet="State" />
+      <End Role="Contacts" EntitySet="Contacts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_State_Country" Association="MyContactBookModel.Store.FK_State_Country">
+      <End Role="Country" EntitySet="Country" />
+      <End Role="State" EntitySet="State" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Contacts">
+    <Key>
+      <PropertyRef Name="ContactID" />
+    </Key>
+    <Property Name="ContactID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="ContactPersonFname" Type="varchar" Nullable="false" MaxLength="100" />
+    <Property Name="ContactPersonLname" Type="varchar" MaxLength="100" />
+    <Property Name="ContactNo1" Type="varchar" Nullable="false" MaxLength="20" />
+    <Property Name="ContactNo2" Type="varchar" MaxLength="20" />
+    <Property Name="EmailID" Type="varchar" MaxLength="128" />
+    <Property Name="CountryID" Type="int" Nullable="false" />
+    <Property Name="StateID" Type="int" Nullable="false" />
+    <Property Name="Address" Type="varchar" MaxLength="200" />
+    <Property Name="ImagePath" Type="varchar" MaxLength="200" />
+  </EntityType>
+  <EntityType Name="Country">
+    <Key>
+      <PropertyRef Name="CountryID" />
+    </Key>
+    <Property Name="CountryID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="CountryName" Type="varchar" Nullable="false" MaxLength="100" />
+  </EntityType>
+  <EntityType Name="State">
+    <Key>
+      <PropertyRef Name="StateID" />
+    </Key>
+    <Property Name="StateID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="CountryID" Type="int" Nullable="false" />
+    <Property Name="StateName" Type="varchar" Nullable="false" MaxLength="100" />
+  </EntityType>
+  <Association Name="FK_Contacts_Country">
+    <End Role="Country" Type="MyContactBookModel.Store.Country" Multiplicity="1" />
+    <End Role="Contacts" Type="MyContactBookModel.Store.Contacts" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Country">
+        <PropertyRef Name="CountryID" />
+      </Principal>
+      <Dependent Role="Contacts">
+        <PropertyRef Name="CountryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Contacts_State">
+    <End Role="State" Type="MyContactBookModel.Store.State" Multiplicity="1" />
+    <End Role="Contacts" Type="MyContactBookModel.Store.Contacts" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="State">
+        <PropertyRef Name="StateID" />
+      </Principal>
+      <Dependent Role="Contacts">
+        <PropertyRef Name="StateID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_State_Country">
+    <End Role="Country" Type="MyContactBookModel.Store.Country" Multiplicity="1" />
+    <End Role="State" Type="MyContactBookModel.Store.State" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Country">
+        <PropertyRef Name="CountryID" />
+      </Principal>
+      <Dependent Role="State">
+        <PropertyRef Name="CountryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>
